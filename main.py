@@ -1,16 +1,21 @@
 from factory_create import Factory
+from toml import dumps, loads
+n = 5
 
 
-def test_fib(num):
-    if num == 0:
-        return 0
-    if num == 1 or num == 2:
+class TestClass1:
+    a = 2
+
+
+def test_square_func():
+    return TestClass1.a * TestClass1.a
+
+
+def test_fact_func(nf):
+    if nf == 0:
         return 1
-    return test_fib(num - 1) + test_fib(num - 2)
-
-
-def func(a):
-    return a * a * a
+    else:
+        return nf * test_fact_func(nf - 1)
 
 
 class SimpleTypes:
@@ -21,32 +26,14 @@ class SimpleTypes:
     test_string = 'Some String'
     test_tuple = (1, 2, 3)
 
-    test_list = ['Some String', 12, None, (None, 14.34, 'true')]
+    test_list = ['Some String'[:], 12, None, (None, 14.34, 'true'[:])]
     test_set = {1, 2, 3, 4, 5}
-
-    test_dict = {'3': [1, 2, 3],
-                 '0.23': 32,
-                 'key': (5, 'info', 8)}
-
+    test_dict = {"a": 1, "b": 2.2, "c": False, "d": True, "f1": [1, 2, 3]}
 
 
 if __name__ == '__main__':
-    a = [1, 2, 3, 4, 5, 6]
-
-    class b():
-        x = 10
-
-    serializer = Factory.create_serializer("json")
-
-    rList = [1, 2, 3, 4, 5]
-
-    arr = bytes(rList)
-    y = True
-    serializer = Factory.create_serializer("json")
-    res = serializer.dumps(SimpleTypes.test_tuple)
-    deserealised = serializer.loads(res)
-    f = open("func.json", "w")
-    resfile = serializer.dump(func, f)
-    res4 = serializer.dumps(arr)
-    c = 4
-
+    a = ['Some String'[:], 12, None, (None, 14.34, 'true'[:])]
+    ser = dumps(a)
+    des = loads(ser)
+    assert des == a
+    c = 1

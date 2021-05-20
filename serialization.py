@@ -1,6 +1,33 @@
 import inspect
 import re
 from pydoc import locate
+from types import CodeType, FunctionType
+
+FUNCTION_ATTRIBUTES = [
+        "__code__",
+        "__name__",
+        "__defaults__",
+        "__closure__"
+    ]
+
+CODE_OBJECT_ARGS = [
+        'co_argcount',
+        'co_posonlyargcount',
+        'co_kwonlyargcount',
+        'co_nlocals',
+        'co_stacksize',
+        'co_flags',
+        'co_code',
+        'co_consts',
+        'co_names',
+        'co_varnames',
+        'co_filename',
+        'co_name',
+        'co_firstlineno',
+        'co_lnotab',
+        'co_freevars',
+        'co_cellvars'
+    ]
 
 
 def serialize_object(obj: object):
@@ -75,9 +102,9 @@ def serialize_object(obj: object):
 
 
 def deserialize_object(obj):
-    result = None
     obj = dict((a, b) for a, b in obj)
     object_type = obj["type"]
+    result = None
     if object_type == "NoneType":
         result = None
     elif object_type == "bytes":
@@ -90,10 +117,42 @@ def deserialize_object(obj):
         result = {}
         for i in obj["value"]:
             val = deserialize_object(i[1])
-            result[serialize_object(i[0])] = val
+            result[deserialize_object(i[0])] = val
+    elif object_type == "function":
+        func = [0] * 4
+        code = [0] * 16
+        glob = {"__builtins__": __builtins__}
+        for i in obj["value"]:
+            key = deserialize_object(i[0])
+
+            if key == "__globals__":
+                globdict = deserialize_object(i[1])
+                for globkey in globdict:
+                    glob[globkey] = globdict[globkey]
+            elif key == "__code__":
+                val = i[1][1][1]
+                for arg in val:
+                    codeArgKey = deserialize_object(arg[0])
+                    if codeArgKey != "__doc__":
+                        codeArgVal = deserialize_object(arg[1])
+                        index = CODE_OBJECT_ARGS.index(codeArgKey)
+                        code[index] = codeArgVal
+
+                code = CodeType(*code)
+            else:
+                index = FUNCTION_ATTRIBUTES.index(key)
+                func[index] = (deserialize_object(i[1]))
+
+        func[0] = code
+        func.insert(1, glob)
+
+        result = FunctionType(*func)
+        if result.__name__ in result.__getattribute__("__globals__"):
+            result.__getattribute__("__globals__")[result.__name__] = result
     else:
         if object_type == "bool":
             result = obj["value"] == "True"
         else:
             result = locate(object_type)(obj["value"])
+
     return result
