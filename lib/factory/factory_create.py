@@ -1,9 +1,10 @@
-import json_parser
+from lib.parsers import toml_parser, yaml_parser, json_parser, pickle_parser
+
 serializers = {
     "json": json_parser.JsonParser,
-    #"yaml": YamlParser,
-    #"toml": TomlParser,
-    #"pickle": PickleParser
+    "yaml": yaml_parser.YamlParser,
+    "toml": toml_parser.TomlParser,
+    "pickle": pickle_parser.PickleParser
 }
 
 

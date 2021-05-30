@@ -1,4 +1,4 @@
-from serialization import *
+from lib.packing.serialization import *
 
 
 class Serializer:
