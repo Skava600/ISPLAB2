@@ -1,21 +1,20 @@
-from factory_create import Factory
-from toml import dumps, loads
-n = 5
-
-
+from lib.factory.factory_create import Factory
 class TestClass1:
     a = 2
+
+    def __init__(self):
+        self.b = 10
 
 
 def test_square_func():
     return TestClass1.a * TestClass1.a
 
 
-def test_fact_func(nf):
-    if nf == 0:
+def test_fact_func(n: int):
+    if n == 0:
         return 1
     else:
-        return nf * test_fact_func(nf - 1)
+        return n * test_fact_func(n - 1)
 
 
 class SimpleTypes:
@@ -30,10 +29,5 @@ class SimpleTypes:
     test_set = {1, 2, 3, 4, 5}
     test_dict = {"a": 1, "b": 2.2, "c": False, "d": True, "f1": [1, 2, 3]}
 
-
-if __name__ == '__main__':
-    a = ['Some String'[:], 12, None, (None, 14.34, 'true'[:])]
-    ser = dumps(a)
-    des = loads(ser)
-    assert des == a
-    c = 1
+serializer = Factory.create_serializer("yaml")
+serializer.dump(SimpleTypes.test_list, "yamltest.yaml")

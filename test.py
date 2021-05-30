@@ -1,5 +1,7 @@
-from main import *
 import pytest
+
+from lib.factory.factory_create import Factory
+from tests_dir.tests import *
 
 serializer_types = ["json", "yaml", "pickle"]
 toml = ["toml"]
@@ -22,12 +24,12 @@ class TestPrimitive:
         serializer = Factory.create_serializer(ser_type)
         assert serializer.loads(serializer.dumps(SimpleTypes.test_float)) == SimpleTypes.test_float
 
-    @pytest.mark.parametrize('ser_type', serializer_types + toml)
+    @pytest.mark.parametrize('ser_type', serializer_types)
     def test_list(self, ser_type):
         serializer = Factory.create_serializer(ser_type)
         assert serializer.loads(serializer.dumps(SimpleTypes.test_list)) == SimpleTypes.test_list
 
-    @pytest.mark.parametrize('ser_type', serializer_types + toml)
+    @pytest.mark.parametrize('ser_type', serializer_types)
     def test_string(self, ser_type):
         serializer = Factory.create_serializer(ser_type)
         assert serializer.loads(serializer.dumps(SimpleTypes.test_string)) == SimpleTypes.test_string
@@ -37,7 +39,7 @@ class TestPrimitive:
         serializer = Factory.create_serializer(ser_type)
         assert serializer.loads(serializer.dumps(SimpleTypes.test_dict)) == SimpleTypes.test_dict
 
-    @pytest.mark.parametrize('ser_type', serializer_types + toml)
+    @pytest.mark.parametrize('ser_type', serializer_types)
     def test_tuple(self, ser_type):
         serializer = Factory.create_serializer(ser_type)
         assert serializer.loads(serializer.dumps(SimpleTypes.test_tuple)) == SimpleTypes.test_tuple
@@ -63,13 +65,16 @@ class TestFunctions:
         res = p.loads(temp)
         assert res() == test_square_func()
 
-class TestClass1:
-    @pytest.mark.parametrize('ser_type', serializer_types + toml)
-    def test_class1(self, ser_type):
-        p = Factory.create_serializer(ser_type)
-        temp = p.dumps(TestClass1)
-        res = p.loads(temp)
+
+class TestClass:
+    @pytest.mark.parametrize('ser_type', serializer_types)
+    def test_class_1(self, ser_type):
+        serializer = Factory.create_serializer(ser_type)
+        res = serializer.loads(serializer.dumps(TestClass1))
+        assert dir(res) == dir(TestClass1)
         assert res.a == TestClass1.a
+
+
 
 
 
