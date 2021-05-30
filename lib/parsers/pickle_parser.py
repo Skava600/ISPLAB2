@@ -1,5 +1,5 @@
 import pickle
-from parser_sk import Parser
+from lib.parsers.parser_sk import Parser
 
 
 class PickleParser(Parser):
@@ -8,7 +8,7 @@ class PickleParser(Parser):
         return pickle.dumps(obj)
 
     @staticmethod
-    def dump(obj, file):
+    def dump(obj, file="testpicke.pickle"):
         with open(file, 'wb') as f:
             pickle.dump(obj, f)
 
@@ -17,7 +17,7 @@ class PickleParser(Parser):
         return pickle.loads(temp_str)
 
     @staticmethod
-    def load(file):
+    def load(file="testpickle.pickle"):
         with open(file, 'rb') as f:
             result = pickle.load(f)
             return result
